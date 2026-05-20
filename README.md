@@ -32,6 +32,24 @@ arrive live, and replay events — all from the keyboard.
    forwards it to your `localhost`, with headers and body intact.
 3. History and replay live in a local SQLite database — nothing leaves your machine.
 
+## Project config
+
+A repo can commit a `.webhook-it.json` listing its webhook endpoints. A teammate
+then provisions all of them with a single command — `wi apply` — instead of
+creating each by hand:
+
+```json
+{
+  "project": "acme-api",
+  "endpoints": {
+    "stripe": { "target": "http://localhost:3000/webhooks/stripe" }
+  }
+}
+```
+
+Endpoints are namespaced by `project`, so two repositories never collide. Full
+reference in [`docs/USAGE.md`](docs/USAGE.md).
+
 ## Structure
 
 ```
@@ -72,7 +90,9 @@ After `bun run build`, run the binary (it is self-contained — no Bun needed to
 
 Inside the dashboard: `u` start/stop the daemon · `n` new endpoint · `c` set the
 ngrok domain · `t` toggle tunnel/local mode · `r` replay · `d` delete · `q` quit.
-See [`docs/USAGE.md`](docs/USAGE.md) for the full reference.
+
+`wi apply` (the one subcommand) provisions endpoints from a project's
+`.webhook-it.json`. See [`docs/USAGE.md`](docs/USAGE.md) for the full reference.
 
 ## Status
 

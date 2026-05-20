@@ -29,6 +29,12 @@ I have `stripe-dev`, `github-app` and an internal webhook. One running daemon
 serves a single tunnel; I move between endpoints with the arrow keys and the
 Events pane shows each one's traffic, routed by path (`/w/<name>`).
 
+**Scenario 4 — A teammate joins the project.**
+The repository has a committed `.webhook-it.json` listing its webhook endpoints.
+A new developer clones it, sets their own ngrok domain once, and runs `wi apply` —
+every endpoint is created locally, namespaced under the project. No endpoint set
+up by hand; nothing shared but the file in git.
+
 ## How it works (summary)
 
 - `wi` opens an interactive dashboard (OpenTUI + Solid). Pressing `u` starts a
@@ -40,6 +46,8 @@ Events pane shows each one's traffic, routed by path (`/w/<name>`).
 - A single tunnel serves all endpoints; routing is by path (`/w/<name>`).
 - The dashboard reads the same SQLite file the daemon writes, so the endpoint and
   event panes always reflect current state.
+- A repo can commit a `.webhook-it.json`; `wi apply` reconciles its endpoints
+  into webhook-it, so a teammate provisions them in one command.
 
 Technical details in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
@@ -57,6 +65,7 @@ Technical details in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 | 8 | Forward the event to localhost, headers and body intact | automatic |
 | 9 | Live event feed per endpoint | Events pane |
 | 10 | Replay the most recent event of an endpoint | press `r` |
+| 11 | Provision a repo's endpoints from a committed `.webhook-it.json` | `wi apply` |
 
 ## Features — Post-MVP (ordered backlog)
 
@@ -96,7 +105,7 @@ Technical details in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 webhook-it/
 ├── apps/
 │   └── cli/                   # interactive dashboard (OpenTUI + Solid)
-│       ├── src/               # index.tsx, app.tsx, theme.ts
+│       ├── src/               # index.ts, app.tsx, theme.ts
 │       └── build.ts           # Bun.build → standalone binary
 ├── packages/
 │   ├── core/                  # the daemon and everything it needs
@@ -106,6 +115,7 @@ webhook-it/
 │   │       ├── forwarder.ts   # POST to the local target
 │   │       ├── config.ts      # ~/.webhook-it/config.json
 │   │       ├── paths.ts       # paths under ~/.webhook-it/
+│   │       ├── project.ts     # .webhook-it.json + `wi apply` reconcile
 │   │       └── tunnel/ngrok.ts# ngrok tunnel adapter
 │   ├── shared/                # types + zod schemas (Endpoint, WebhookEvent)
 │   └── tsconfig/              # reusable base tsconfigs

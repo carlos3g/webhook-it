@@ -18,12 +18,15 @@ is left is polishing, automating tests and (in the backlog) a web UI.
 | Toolchain | Bun workspaces (runtime, package manager, bundler) | ✅ |
 | Build | `bun run build` → standalone binary (`apps/cli/dist/wi`) | ✅ |
 | Config | `~/.webhook-it/config.json` (ngrok domain, port) | ✅ |
+| Project | committed `.webhook-it.json` — per-repo endpoints, namespaced | ✅ |
+| CLI | `wi apply` — provision endpoints from `.webhook-it.json` | ✅ |
 | Storage | local SQLite (`bun:sqlite`), `endpoint` and `event` tables | ✅ |
 | Dashboard | OpenTUI + Solid interactive UI | ✅ |
 | Dashboard | endpoint list + selection, with target / public URL detail | ✅ |
 | Dashboard | live event feed per endpoint | ✅ |
 | Dashboard | create endpoint (`n`), set ngrok domain (`c`), delete (`d`) | ✅ |
 | Dashboard | first-run setup: auto-prompts for the ngrok domain if unset | ✅ |
+| Dashboard | auto-detects `.webhook-it.json` and offers to apply it | ✅ |
 | Dashboard | start/stop the daemon (`u`), toggle tunnel/local mode (`t`) | ✅ |
 | Dashboard | replay the latest event of an endpoint (`r`) | ✅ |
 | Daemon | HTTP ingest server on `127.0.0.1`, running in-process | ✅ |
@@ -48,6 +51,10 @@ actually been verified.
   mode); two `curl` webhooks to `127.0.0.1:4505` returned `200`, appeared live in
   the Events pane, and the forward was attempted (it correctly reported a
   delivery failure because no local target was running in the test).
+- **`wi apply`** — verified against an isolated `HOME`: fresh apply, idempotent
+  re-run, target update, orphan reporting, parent-directory walk-up, and the
+  error cases (no file, invalid JSON, bad schema → exit `1`). The dashboard's
+  auto-detect → confirm → apply flow was verified in a PTY.
 
 ### What has NOT been exercised end-to-end yet
 

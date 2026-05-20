@@ -1,7 +1,8 @@
 # Usage
 
-`webhook-it` is an interactive terminal dashboard. There are no subcommands —
-you run `wi`, and everything happens with the keyboard inside the dashboard.
+`webhook-it` is an interactive terminal dashboard. You run `wi` and everything
+happens with the keyboard inside it. The one subcommand, `wi apply`, provisions a
+project's endpoints from a committed file — see *Project config* below.
 
 For why the project exists see [`MOTIVATION.md`](MOTIVATION.md); for how it works
 inside, see [`ARCHITECTURE.md`](ARCHITECTURE.md).
@@ -29,7 +30,8 @@ During development you can skip the build and run from source with hot reload:
 bun run dev
 ```
 
-`wi --version` and `wi --help` print and exit without opening the dashboard.
+`wi --version`, `wi --help` and `wi apply` print and exit without opening the
+dashboard.
 
 ## Where the files live
 
@@ -41,6 +43,57 @@ Everything lives in `~/.webhook-it/` — nothing leaves your machine:
 | `~/.webhook-it/db.sqlite` | endpoints and event history (+ `-wal`/`-shm` files) |
 
 Deleting those files resets the state. There is no account, no login, no cloud.
+
+## Project config (`.webhook-it.json`)
+
+A repository can declare its webhook endpoints in a committed file, so a new
+teammate provisions everything with one command instead of recreating each
+endpoint by hand.
+
+Put `.webhook-it.json` at the repo root:
+
+```json
+{
+  "$schema": "https://github.com/carlos3g/webhook-it/blob/main/webhook-it.schema.json",
+  "project": "acme-api",
+  "endpoints": {
+    "stripe": { "target": "http://localhost:3000/webhooks/stripe" },
+    "github": { "target": "http://localhost:3000/webhooks/github" }
+  }
+}
+```
+
+- **`project`** namespaces every endpoint. `stripe` above is stored — and exposed
+  in its public URL — as `acme-api-stripe`, so two repositories never collide.
+- **`endpoints`** maps a name to the local URL that receives the forward.
+- **Commit it.** It holds no secrets. The personal bits (your ngrok domain) stay
+  in `~/.webhook-it/config.json`, which is per-machine and never committed.
+
+Then run `wi apply` from anywhere inside the repo:
+
+```bash
+wi apply
+```
+
+```
+webhook-it — applied /path/to/repo/.webhook-it.json
+project: acme-api
+
+  + acme-api-stripe  http://localhost:3000/webhooks/stripe
+  + acme-api-github  http://localhost:3000/webhooks/github
+
+2 endpoint(s): 2 created, 0 updated, 0 unchanged
+```
+
+`wi apply` is idempotent, like `terraform apply`: it creates missing endpoints,
+updates changed targets and leaves the rest untouched (`+` created, `~` updated,
+`=` unchanged). It **never deletes** — an endpoint dropped from the file is
+reported but kept, with its event history. Safe to re-run, and safe in CI: it
+exits `1` on a missing or invalid file, `0` otherwise.
+
+You can also skip the command: when you open `wi` inside a repo that has a
+`.webhook-it.json`, the dashboard detects it and offers to apply any pending
+changes — the same way it prompts for the ngrok domain on first run.
 
 ## The two modes
 
@@ -115,6 +168,13 @@ In a form (`n` / `c`): `tab` moves between fields, `enter` confirms, `esc` cance
 3. `n` → create an endpoint.
 4. `u` → start the daemon; the public URL appears in the header.
 5. Paste `https://yourname.ngrok-free.app/w/<name>` into the provider's dashboard.
+
+### Joining a project that already uses webhook-it
+
+1. `ngrok config add-authtoken <token>` and reserve a domain — once per machine.
+2. Open `wi`, press `c`, set your ngrok domain.
+3. `wi apply` in the repo — every endpoint is created from `.webhook-it.json`.
+4. `u` to start the daemon. Done — no endpoint set up by hand.
 
 ## Operational limitations
 

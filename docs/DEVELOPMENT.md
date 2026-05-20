@@ -24,7 +24,7 @@ webhook-it/
 ├── apps/
 │   └── cli/                 @webhook-it/cli — the interactive dashboard
 │       ├── src/
-│       │   ├── index.tsx         entry: arg handling + render(App)
+│       │   ├── index.ts          entry: args + `wi apply`, lazy-loads the UI
 │       │   ├── app.tsx           the dashboard (state, daemon, keyboard, layout)
 │       │   └── theme.ts          color palette
 │       ├── build.ts              Bun.build → standalone binary
@@ -39,6 +39,7 @@ webhook-it/
 │   │       ├── forwarder.ts      POST to the local target
 │   │       ├── config.ts         ~/.webhook-it/config.json
 │   │       ├── paths.ts          paths under ~/.webhook-it/
+│   │       ├── project.ts        .webhook-it.json + `wi apply` reconcile
 │   │       ├── ids.ts            short id generator
 │   │       └── tunnel/ngrok.ts   ngrok tunnel adapter
 │   ├── shared/              @webhook-it/shared — types + zod schemas
@@ -134,6 +135,9 @@ There is no automated test suite yet. Current validation is manual:
 3. **End-to-end:** start the daemon with `u` (local mode), then send webhooks
    with `curl` to `http://127.0.0.1:4505/w/<name>` and watch them appear in the
    Events pane. See [`STATE.md`](STATE.md) for what has been verified this way.
+4. **`wi apply`:** drop a `.webhook-it.json` in a scratch directory and run
+   `HOME=/tmp/wi-test ./apps/cli/dist/wi apply` from it — re-run it to confirm it
+   is idempotent.
 
 An automated suite (`bun test` covering `storage` and `forwarder`) is a natural
 next step.

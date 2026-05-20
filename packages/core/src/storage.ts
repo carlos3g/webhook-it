@@ -132,6 +132,14 @@ export class Storage {
     return row ? toEndpoint(row) : null;
   }
 
+  updateEndpointTarget(name: string, targetUrl: string): boolean {
+    const result = this.#db.run(
+      "update endpoint set target_url = ? where name = ?",
+      [targetUrl, name],
+    );
+    return result.changes > 0;
+  }
+
   deleteEndpoint(name: string): boolean {
     const result = this.#db.run("delete from endpoint where name = ?", [name]);
     return result.changes > 0;

@@ -1,10 +1,13 @@
 import { createSignal, createMemo, createEffect, onMount, onCleanup, For, Show } from "solid-js";
-import { useKeyboard, useRenderer, useTerminalDimensions } from "@opentui/solid";
+import { render, useKeyboard, useRenderer, useTerminalDimensions } from "@opentui/solid";
 import {
   Storage,
   startDaemon,
   writeConfig,
   forwardEvent,
+  loadProjectConfig,
+  planProjectApply,
+  executeProjectApply,
   type DaemonHandle,
   type WebhookItConfig,
 } from "@webhook-it/core";
@@ -60,6 +63,13 @@ function isPrintable(key: KeyLike): boolean {
   );
 }
 
+/** Mounts the interactive dashboard. Kept here so the entry point stays JSX-free. */
+export function startDashboard(storage: Storage, config: WebhookItConfig): void {
+  render(() => <App storage={storage} initialConfig={config} />, {
+    exitOnCtrlC: false,
+  });
+}
+
 export function App(props: { storage: Storage; initialConfig: WebhookItConfig }) {
   const renderer = useRenderer();
   const dimensions = useTerminalDimensions();
@@ -101,12 +111,62 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
       openConfigPrompt(true);
     }
 
+    // If the current directory is a project with a `.webhook-it.json`, offer to
+    // apply it — so a teammate gets every endpoint without creating them by hand.
+    void offerProjectApply();
+
     const timer = setInterval(() => {
       setEndpoints(props.storage.listEndpoints());
       setAllEvents(props.storage.listEvents(null, 200));
     }, 400);
     onCleanup(() => clearInterval(timer));
   });
+
+  /**
+   * Detects a `.webhook-it.json` and, if it would create or change endpoints,
+   * asks the user to confirm. Headless reconcile is `wi apply`; this is the
+   * interactive twin, consistent with the first-run domain prompt.
+   */
+  async function offerProjectApply(): Promise<void> {
+    const loaded = await loadProjectConfig().catch((err: unknown) => {
+      const message = err instanceof Error ? err.message : String(err);
+      setStatusLine(message.split("\n")[0] ?? message);
+      return null;
+    });
+    if (!loaded) return;
+
+    const plan = planProjectApply(props.storage, loaded);
+    const created = plan.endpoints.filter((e) => e.action === "create").length;
+    const updated = plan.endpoints.filter((e) => e.action === "update").length;
+    if (created + updated === 0) {
+      setStatusLine(
+        `project '${plan.project}' — ${plan.endpoints.length} endpoint(s) up to date`,
+      );
+      return;
+    }
+
+    // Wait for any open overlay (e.g. the first-run domain prompt) to be closed.
+    while (prompt() || confirm()) {
+      await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+
+    setStatusLine(`project '${plan.project}': ${created} new, ${updated} changed`);
+    setConfirm({
+      message: `Apply ${created + updated} change(s) from .webhook-it.json?`,
+      onYes: () => {
+        try {
+          // Re-plan at confirm time in case storage changed while the prompt was open.
+          const fresh = planProjectApply(props.storage, loaded);
+          executeProjectApply(props.storage, fresh);
+          setEndpoints(props.storage.listEndpoints());
+          const changed = fresh.endpoints.filter((e) => e.action !== "unchanged").length;
+          setStatusLine(`applied project '${fresh.project}' — ${changed} endpoint(s) set`);
+        } catch (err) {
+          setStatusLine(err instanceof Error ? err.message : String(err));
+        }
+      },
+    });
+  }
 
   function endpointUrl(ep: Endpoint): string {
     const url = publicUrl();

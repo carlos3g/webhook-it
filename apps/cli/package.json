@@ -11,7 +11,7 @@
     "dist"
   ],
   "scripts": {
-    "dev": "bun --watch src/index.tsx",
+    "dev": "bun --watch src/index.ts",
     "build": "bun run build.ts",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"

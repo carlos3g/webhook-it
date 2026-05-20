@@ -35,11 +35,14 @@ A terminal app built with [OpenTUI](https://github.com/anomalyco/opentui) and it
 Solid binding, compiled by Bun into a single executable exposed as `webhook-it`
 and `wi`.
 
-- **`index.tsx`** — entry point. Handles `--help` / `--version`, opens the
-  `Storage`, reads the config, then `render`s the dashboard.
+- **`index.ts`** — entry point. Handles `--help` / `--version` and the `wi apply`
+  subcommand; otherwise opens the `Storage`, reads the config and renders the
+  dashboard. OpenTUI is imported lazily, so the headless commands never load the
+  native terminal core.
 - **`app.tsx`** — the whole dashboard: Solid signals for state, the daemon
   lifecycle, the keyboard router, the layout (header, endpoint pane, event pane,
-  footer) and the create/confirm overlays.
+  footer) and the create/confirm overlays. Also detects a project
+  `.webhook-it.json` on startup and offers to apply it.
 - **`theme.ts`** — the color palette.
 
 The dashboard **hosts the daemon in its own process**. Pressing `u` calls
@@ -47,8 +50,8 @@ The dashboard **hosts the daemon in its own process**. Pressing `u` calls
 signals, so the UI reacts to incoming webhooks. A short interval re-reads the
 SQLite file so the panes stay in sync with what the daemon writes.
 
-There are no subcommands — `wi` always opens the dashboard (only `--help` and
-`--version` short-circuit it).
+`wi` opens the dashboard; `--help`, `--version` and the `wi apply` subcommand
+short-circuit it and run headless.
 
 ### `packages/core` — the daemon and the core
 
@@ -67,6 +70,11 @@ reuse it.
   isolated to allow other tunnel adapters later.
 - **`config.ts` / `paths.ts`** — read/write `~/.webhook-it/config.json` and the
   paths under `~/.webhook-it/`.
+- **`project.ts`** — the per-repo `.webhook-it.json`: finds it (walking up from
+  the cwd), validates it with zod, then `plan`/`execute` the reconcile that
+  `wi apply` and the dashboard's auto-detect both use. Endpoints are namespaced by
+  the file's `project` field — `stripe` in project `acme-api` is stored as
+  `acme-api-stripe`, so two repos never collide.
 
 ### `packages/shared` — contracts
 

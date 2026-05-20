@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/carlos3g/webhook-it/blob/main/webhook-it.schema.json",
+  "title": "webhook-it project config",
+  "description": "Declares the webhook endpoints of a project. Save it as .webhook-it.json at the repo root and run `wi apply` to reconcile the endpoints into webhook-it.",
+  "type": "object",
+  "required": ["project", "endpoints"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional reference to this schema, for editor autocomplete."
+    },
+    "project": {
+      "type": "string",
+      "description": "Namespace for this project. Every endpoint is stored, and exposed in its public URL, as `<project>-<endpoint>` — so two repositories never collide.",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-_]*$",
+      "maxLength": 64
+    },
+    "endpoints": {
+      "type": "object",
+      "description": "Map of endpoint name to its local forward target.",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^[a-zA-Z0-9][a-zA-Z0-9-_]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": ["target"],
+        "additionalProperties": false,
+        "properties": {
+          "target": {
+            "type": "string",
+            "format": "uri",
+            "description": "Local URL that receives the forwarded webhook, e.g. http://localhost:3000/webhooks/stripe."
+          }
+        }
+      }
+    }
+  }
+}

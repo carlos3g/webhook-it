@@ -7,7 +7,7 @@ import solidPlugin from "@opentui/solid/bun-plugin";
 mkdirSync("./dist", { recursive: true });
 
 const result = await Bun.build({
-  entrypoints: ["./src/index.tsx"],
+  entrypoints: ["./src/index.ts"],
   plugins: [solidPlugin],
   compile: { outfile: "./dist/wi" },
 });
