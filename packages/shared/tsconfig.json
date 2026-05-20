@@ -1,0 +1,7 @@
+{
+  "extends": "@webhook-it/tsconfig/base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src/**/*"]
+}

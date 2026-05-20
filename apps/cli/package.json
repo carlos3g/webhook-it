@@ -1,0 +1,29 @@
+{
+  "name": "@webhook-it/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "webhook-it": "./dist/wi",
+    "wi": "./dist/wi"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "bun --watch src/index.tsx",
+    "build": "bun run build.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@opentui/core": "^0.2.14",
+    "@opentui/solid": "^0.2.14",
+    "@webhook-it/core": "workspace:*",
+    "@webhook-it/shared": "workspace:*",
+    "solid-js": "^1.9.13"
+  },
+  "devDependencies": {
+    "@webhook-it/tsconfig": "workspace:*"
+  }
+}

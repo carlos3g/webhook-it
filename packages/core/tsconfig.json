@@ -1,0 +1,4 @@
+{
+  "extends": "@webhook-it/tsconfig/bun.json",
+  "include": ["src/**/*"]
+}
