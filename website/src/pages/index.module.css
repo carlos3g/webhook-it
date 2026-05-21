@@ -1,0 +1,166 @@
+/* Landing page — webhook-it */
+
+.hero {
+  text-align: center;
+  padding: 4rem 1rem 3rem;
+  background:
+    radial-gradient(
+      60rem 30rem at 50% -8rem,
+      rgba(9, 105, 218, 0.14),
+      transparent 70%
+    ),
+    var(--ifm-background-color);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.heroLogo {
+  filter: drop-shadow(0 8px 22px rgba(9, 105, 218, 0.32));
+}
+
+.heroTitle {
+  font-size: 3.4rem;
+  margin: 1.1rem 0 0.4rem;
+  letter-spacing: -0.04em;
+}
+
+.heroTagline {
+  font-size: 1.32rem;
+  max-width: 40rem;
+  margin: 0 auto;
+  color: var(--ifm-color-emphasis-800);
+  line-height: 1.5;
+}
+
+.heroSub {
+  font-size: 0.98rem;
+  color: var(--ifm-color-emphasis-600);
+  margin-top: 0.5rem;
+}
+
+.heroButtons {
+  display: flex;
+  gap: 0.85rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1.7rem 0 0;
+}
+
+.heroShot {
+  display: block;
+  width: 100%;
+  max-width: 60rem;
+  margin: 2.6rem auto 0;
+}
+
+/* ---- sections ---- */
+
+.section {
+  padding: 3.6rem 0;
+}
+
+.sectionAlt {
+  background: var(--wi-surface);
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
+
+.sectionTitle {
+  text-align: center;
+  font-size: 2rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.4rem;
+}
+
+.sectionLede {
+  text-align: center;
+  max-width: 36rem;
+  margin: 0 auto 2.4rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+/* ---- feature cards ---- */
+
+.card {
+  height: 100%;
+  padding: 1.6rem;
+  margin-bottom: 1.6rem;
+  background: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 12px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--ifm-color-primary);
+  transform: translateY(-3px);
+}
+
+.cardIcon {
+  font-size: 1.7rem;
+  line-height: 1;
+  margin-bottom: 0.7rem;
+}
+
+.cardTitle {
+  font-size: 1.16rem;
+  margin-bottom: 0.4rem;
+}
+
+.cardBody {
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 0;
+  font-size: 0.96rem;
+}
+
+/* ---- steps ---- */
+
+.step {
+  height: 100%;
+  padding: 1.6rem;
+  margin-bottom: 1.6rem;
+}
+
+.stepNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: var(--ifm-color-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+/* ---- cta ---- */
+
+.cta {
+  text-align: center;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 2.8rem 1.5rem;
+  background: var(--wi-surface);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 16px;
+}
+
+.ctaTitle {
+  font-size: 1.7rem;
+  letter-spacing: -0.02em;
+}
+
+.ctaBody {
+  color: var(--ifm-color-emphasis-700);
+  margin-bottom: 1.4rem;
+}
+
+@media screen and (max-width: 768px) {
+  .heroTitle {
+    font-size: 2.5rem;
+  }
+  .heroTagline {
+    font-size: 1.12rem;
+  }
+}

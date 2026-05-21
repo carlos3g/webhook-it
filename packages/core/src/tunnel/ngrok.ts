@@ -18,6 +18,11 @@ function readLines(stream: Readable | null, onLine: (line: string) => void): voi
   createInterface({ input: stream }).on("line", onLine);
 }
 
+/** ngrok's JSON log values are untyped; coerce a field to a string safely. */
+function asString(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
 /**
  * Starts the tunnel by running the `ngrok` binary the user already installed, so
  * webhook-it does not have to bundle any native SDK. The authtoken lives in
@@ -73,7 +78,7 @@ export class NgrokTunnel {
       });
 
       proc.on("exit", (code) => {
-        fail(`ngrok exited (code ${code ?? "null"}) before opening the tunnel`);
+        fail(`ngrok exited (code ${String(code)}) before opening the tunnel`);
       });
 
       const onLine = (line: string): void => {
@@ -92,19 +97,20 @@ export class NgrokTunnel {
           succeed(parsed["url"]);
           return;
         }
-        const level = String(parsed["lvl"] ?? "");
+        const level = asString(parsed["lvl"]);
         if (ERROR_LEVELS.has(level)) {
-          fail(`ngrok: ${String(parsed["err"] ?? parsed["msg"] ?? "unknown error")}`);
+          const detail =
+            asString(parsed["err"]) || asString(parsed["msg"]) || "unknown error";
+          fail(`ngrok: ${detail}`);
         }
       };
 
       readLines(proc.stdout, onLine);
       readLines(proc.stderr, onLine);
 
-      setTimeout(
-        () => fail("timed out waiting for the ngrok tunnel to come up (15s)"),
-        STARTUP_TIMEOUT_MS,
-      ).unref();
+      setTimeout(() => {
+        fail("timed out waiting for the ngrok tunnel to come up (15s)");
+      }, STARTUP_TIMEOUT_MS).unref();
     });
   }
 

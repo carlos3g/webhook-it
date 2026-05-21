@@ -4,8 +4,13 @@ Stable public URLs for webhooks, forwarded in real time to your localhost —
 through an interactive terminal dashboard. Runs 100% on your machine; the only
 external piece is the ngrok tunnel.
 
-> 📚 **Full documentation in [`docs/`](docs/README.md).**
-> Shortcuts: [current state](docs/STATE.md) · [usage](docs/USAGE.md) ·
+> 📚 **Documentation site** — a full Docusaurus site lives in
+> [`website/`](website/): get-started guides, concepts, a dashboard tour, a CLI
+> reference and architecture, with generated terminal screenshots throughout.
+> Run it with `cd website && npm install && npm start`.
+>
+> The original Markdown notes are still in [`docs/`](docs/README.md):
+> [current state](docs/STATE.md) · [usage](docs/USAGE.md) ·
 > [motivation](docs/MOTIVATION.md) · [architecture](docs/ARCHITECTURE.md) ·
 > [development](docs/DEVELOPMENT.md)
 

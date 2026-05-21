@@ -6,6 +6,7 @@ import {
   executeProjectApply,
   ProjectConfigError,
   PROJECT_CONFIG_FILENAME,
+  type ApplyAction,
   type ProjectApplyPlan,
 } from "@webhook-it/core";
 
@@ -34,7 +35,7 @@ Keys inside the dashboard:
 
 /** Prints a `wi apply` plan as a readable summary. */
 function printApplyPlan(plan: ProjectApplyPlan): void {
-  const mark: Record<string, string> = { create: "+", update: "~", unchanged: "=" };
+  const mark: Record<ApplyAction, string> = { create: "+", update: "~", unchanged: "=" };
   const width = Math.max(12, ...plan.endpoints.map((e) => e.name.length));
 
   console.log(`webhook-it — applied ${plan.configPath}`);
@@ -46,13 +47,14 @@ function printApplyPlan(plan: ProjectApplyPlan): void {
   const count = (action: string): number =>
     plan.endpoints.filter((e) => e.action === action).length;
   console.log(
-    `\n${plan.endpoints.length} endpoint(s): ` +
-      `${count("create")} created, ${count("update")} updated, ${count("unchanged")} unchanged`,
+    `\n${String(plan.endpoints.length)} endpoint(s): ` +
+      `${String(count("create"))} created, ${String(count("update"))} updated, ` +
+      `${String(count("unchanged"))} unchanged`,
   );
 
   if (plan.orphans.length > 0) {
     console.log(
-      `\nnote: ${plan.orphans.length} endpoint(s) under this namespace are not in ` +
+      `\nnote: ${String(plan.orphans.length)} endpoint(s) under this namespace are not in ` +
         `the file (kept, not deleted):`,
     );
     for (const name of plan.orphans) console.log(`  ? ${name}`);

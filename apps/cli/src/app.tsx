@@ -1,13 +1,13 @@
 import { createSignal, createMemo, createEffect, onMount, onCleanup, For, Show } from "solid-js";
 import { render, useKeyboard, useRenderer, useTerminalDimensions } from "@opentui/solid";
 import {
-  Storage,
   startDaemon,
   writeConfig,
   forwardEvent,
   loadProjectConfig,
   planProjectApply,
   executeProjectApply,
+  type Storage,
   type DaemonHandle,
   type WebhookItConfig,
 } from "@webhook-it/core";
@@ -65,7 +65,7 @@ function isPrintable(key: KeyLike): boolean {
 
 /** Mounts the interactive dashboard. Kept here so the entry point stays JSX-free. */
 export function startDashboard(storage: Storage, config: WebhookItConfig): void {
-  render(() => <App storage={storage} initialConfig={config} />, {
+  void render(() => <App storage={storage} initialConfig={config} />, {
     exitOnCtrlC: false,
   });
 }
@@ -95,6 +95,10 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
     return ep ? allEvents().filter((e) => e.endpointName === ep.name) : allEvents();
   });
   const eventsCapacity = createMemo(() => Math.max(1, dimensions().height - 10));
+  const eventsTitle = createMemo(() => {
+    const ep = selectedEndpoint();
+    return ep ? `Events — ${ep.name}` : "Events";
+  });
 
   // Keep the selection in range as the endpoint list changes.
   createEffect(() => {
@@ -119,7 +123,9 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
       setEndpoints(props.storage.listEndpoints());
       setAllEvents(props.storage.listEvents(null, 200));
     }, 400);
-    onCleanup(() => clearInterval(timer));
+    onCleanup(() => {
+      clearInterval(timer);
+    });
   });
 
   /**
@@ -140,7 +146,7 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
     const updated = plan.endpoints.filter((e) => e.action === "update").length;
     if (created + updated === 0) {
       setStatusLine(
-        `project '${plan.project}' — ${plan.endpoints.length} endpoint(s) up to date`,
+        `project '${plan.project}' — ${String(plan.endpoints.length)} endpoint(s) up to date`,
       );
       return;
     }
@@ -150,9 +156,11 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
       await new Promise((resolve) => setTimeout(resolve, 150));
     }
 
-    setStatusLine(`project '${plan.project}': ${created} new, ${updated} changed`);
+    setStatusLine(
+      `project '${plan.project}': ${String(created)} new, ${String(updated)} changed`,
+    );
     setConfirm({
-      message: `Apply ${created + updated} change(s) from .webhook-it.json?`,
+      message: `Apply ${String(created + updated)} change(s) from .webhook-it.json?`,
       onYes: () => {
         try {
           // Re-plan at confirm time in case storage changed while the prompt was open.
@@ -160,7 +168,9 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
           executeProjectApply(props.storage, fresh);
           setEndpoints(props.storage.listEndpoints());
           const changed = fresh.endpoints.filter((e) => e.action !== "unchanged").length;
-          setStatusLine(`applied project '${fresh.project}' — ${changed} endpoint(s) set`);
+          setStatusLine(
+            `applied project '${fresh.project}' — ${String(changed)} endpoint(s) set`,
+          );
         } catch (err) {
           setStatusLine(err instanceof Error ? err.message : String(err));
         }
@@ -253,7 +263,7 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
     setStatusLine(
       result.error
         ? `replay failed: ${result.error}`
-        : `replayed ${latest.id} -> ${result.status} (${result.latencyMs}ms)`,
+        : `replayed ${latest.id} -> ${String(result.status)} (${String(result.latencyMs)}ms)`,
     );
   }
 
@@ -361,7 +371,7 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
     }
     if (isPrintable(key)) {
       const fields = current.fields.map((f, i) =>
-        i === current.active ? { ...f, value: f.value + key.sequence } : f,
+        i === current.active ? { ...f, value: f.value + (key.sequence ?? "") } : f,
       );
       setPrompt({ ...current, fields, error: undefined });
     }
@@ -513,7 +523,7 @@ export function App(props: { storage: Storage; initialConfig: WebhookItConfig })
           border
           borderStyle="rounded"
           borderColor={theme.border}
-          title={selectedEndpoint() ? `Events — ${selectedEndpoint()!.name}` : "Events"}
+          title={eventsTitle()}
           flexDirection="column"
           padding={1}
         >

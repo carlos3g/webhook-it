@@ -11,13 +11,18 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "bun run --filter '@webhook-it/cli' build",
-    "dev": "bun run --filter '@webhook-it/cli' dev",
+    "build": "bun run --filter '@carlos3g/webhook-it' build",
+    "build:npm": "bun run --filter '@carlos3g/webhook-it' build:npm",
+    "dev": "bun run --filter '@carlos3g/webhook-it' dev",
     "typecheck": "bun run --filter '*' typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "start": "bun run apps/cli/src/index.ts"
   },
   "devDependencies": {
+    "@carlos3g/eslint-config": "^0.2.0",
     "@types/bun": "latest",
+    "eslint": "^9",
     "typescript": "^5.7.2"
   }
 }

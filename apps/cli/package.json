@@ -1,29 +1,60 @@
 {
-  "name": "@webhook-it/cli",
+  "name": "@carlos3g/webhook-it",
   "version": "0.1.0",
-  "private": true,
+  "description": "Stable public URLs for webhooks, forwarded in real time to your localhost — an interactive terminal dashboard.",
+  "keywords": [
+    "webhook",
+    "webhooks",
+    "cli",
+    "tui",
+    "ngrok",
+    "tunnel",
+    "localhost",
+    "developer-tools",
+    "stripe",
+    "bun"
+  ],
+  "homepage": "https://carlos3g.github.io/webhook-it/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlos3g/webhook-it.git",
+    "directory": "apps/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/carlos3g/webhook-it/issues"
+  },
+  "author": "Carlos Mesquita",
   "type": "module",
+  "engines": {
+    "bun": ">=1.3.0"
+  },
   "bin": {
-    "webhook-it": "./dist/wi",
-    "wi": "./dist/wi"
+    "webhook-it": "dist-npm/wi.js",
+    "wi": "dist-npm/wi.js"
   },
   "files": [
-    "dist"
+    "dist-npm"
   ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "build": "bun run build.ts",
+    "build:npm": "bun run build-npm.ts",
+    "prepack": "bun run build-npm.ts",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist dist-npm"
   },
   "dependencies": {
     "@opentui/core": "^0.2.14",
     "@opentui/solid": "^0.2.14",
-    "@webhook-it/core": "workspace:*",
-    "@webhook-it/shared": "workspace:*",
     "solid-js": "^1.9.13"
   },
   "devDependencies": {
+    "@webhook-it/core": "workspace:*",
+    "@webhook-it/shared": "workspace:*",
     "@webhook-it/tsconfig": "workspace:*"
   }
 }

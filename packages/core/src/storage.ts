@@ -98,8 +98,8 @@ export class Storage {
   static open(path: string = DB_PATH): Storage {
     mkdirSync(dirname(path), { recursive: true });
     const db = new Database(path, { create: true });
-    db.exec("pragma journal_mode = wal;");
-    db.exec(SCHEMA);
+    db.run("pragma journal_mode = wal;");
+    db.run(SCHEMA);
     return new Storage(db);
   }
 

@@ -1,0 +1,110 @@
+/**
+ * Global styles for the webhook-it documentation.
+ * Built on Infima (Docusaurus' CSS framework). The palette tracks the
+ * project's own GitHub-blue theme (apps/cli/src/theme.ts).
+ */
+
+:root {
+  --ifm-color-primary: #0969da;
+  --ifm-color-primary-dark: #085fc4;
+  --ifm-color-primary-darker: #085ab9;
+  --ifm-color-primary-darkest: #064a99;
+  --ifm-color-primary-light: #1277e8;
+  --ifm-color-primary-lighter: #2580ea;
+  --ifm-color-primary-lightest: #4f99ee;
+
+  --ifm-code-font-size: 92%;
+  --ifm-font-family-monospace: ui-monospace, SFMono-Regular, "SF Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+  --docusaurus-highlighted-code-line-bg: rgba(9, 105, 218, 0.1);
+
+  --wi-surface: #f6f8fa;
+  --wi-border: #d1d9e0;
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #58a6ff;
+  --ifm-color-primary-dark: #3995ff;
+  --ifm-color-primary-darker: #2a8dff;
+  --ifm-color-primary-darkest: #0072f5;
+  --ifm-color-primary-light: #77b7ff;
+  --ifm-color-primary-lighter: #86bfff;
+  --ifm-color-primary-lightest: #b3d6ff;
+
+  --docusaurus-highlighted-code-line-bg: rgba(88, 166, 255, 0.15);
+
+  --wi-surface: #161b22;
+  --wi-border: #30363d;
+  --ifm-background-color: #0d1117;
+  --ifm-background-surface-color: #161b22;
+}
+
+/* ---------------------------------------------------------- screenshots */
+
+/* The terminal screenshots are self-contained SVGs (chrome + shadow baked
+   in). They only need to be centered and given breathing room. */
+.markdown img {
+  display: block;
+  margin: 1.8rem auto;
+  max-width: 100%;
+}
+
+.markdown img[src*="/screens/"] {
+  width: 100%;
+}
+
+/* An italic line directly under an image reads as its caption. */
+.markdown p > img + em,
+.markdown p > em:only-child {
+  display: block;
+  text-align: center;
+  font-size: 0.86rem;
+  color: var(--ifm-color-emphasis-600);
+}
+
+/* ------------------------------------------------------------- content */
+
+.markdown h1 {
+  font-size: 2.4rem;
+  letter-spacing: -0.02em;
+}
+
+.markdown h2 {
+  margin-top: 2.4rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  letter-spacing: -0.01em;
+}
+
+article .theme-doc-markdown table {
+  display: table;
+  width: 100%;
+}
+
+.theme-doc-sidebar-item-category > .menu__list-item-collapsible .menu__link {
+  font-weight: 600;
+}
+
+/* Mermaid diagrams sit on a soft surface so they read as figures. */
+.docusaurus-mermaid-container {
+  margin: 1.8rem 0;
+  padding: 1rem;
+  background: var(--wi-surface);
+  border: 1px solid var(--wi-border);
+  border-radius: 10px;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------- misc */
+
+.footer--dark {
+  --ifm-footer-background-color: #0b1117;
+}
+
+kbd {
+  font-size: 0.78rem;
+}
+
+.theme-admonition {
+  border-radius: 8px;
+}

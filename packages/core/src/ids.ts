@@ -9,8 +9,8 @@ const ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
 export function shortId(length = 10): string {
   const bytes = randomBytes(length);
   let out = "";
-  for (let i = 0; i < length; i++) {
-    out += ALPHABET[bytes[i]! % ALPHABET.length];
+  for (const byte of bytes) {
+    out += ALPHABET[byte % ALPHABET.length] ?? "";
   }
   return out;
 }

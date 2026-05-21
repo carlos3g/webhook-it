@@ -22,7 +22,7 @@ and compiles the standalone binary. No external service other than the tunnel.
 ```
 webhook-it/
 ├── apps/
-│   └── cli/                 @webhook-it/cli — the interactive dashboard
+│   └── cli/                 @carlos3g/webhook-it — the interactive dashboard
 │       ├── src/
 │       │   ├── index.ts          entry: args + `wi apply`, lazy-loads the UI
 │       │   ├── app.tsx           the dashboard (state, daemon, keyboard, layout)

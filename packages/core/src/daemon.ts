@@ -44,7 +44,9 @@ function readBody(req: IncomingMessage): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
     req.on("data", (chunk: Buffer) => chunks.push(chunk));
-    req.on("end", () => resolve(Buffer.concat(chunks)));
+    req.on("end", () => {
+      resolve(Buffer.concat(chunks));
+    });
     req.on("error", reject);
   });
 }
@@ -136,7 +138,7 @@ async function handleRequest(
       hooks.onLog?.(
         result.error
           ? `${event.id} → delivery failed: ${result.error}`
-          : `${event.id} → delivered (${result.status}) in ${result.latencyMs}ms`,
+          : `${event.id} → delivered (${String(result.status)}) in ${String(result.latencyMs)}ms`,
       );
     })
     .catch((err: unknown) => {
@@ -160,12 +162,6 @@ export async function startDaemon(
   const useTunnel = options.tunnel !== false;
   const port = config.ingestPort;
 
-  if (useTunnel && !config.ngrokDomain) {
-    throw new Error(
-      "ngrok domain not configured — run: wi config --ngrok-domain <your>.ngrok-free.app",
-    );
-  }
-
   const server: Server = createServer((req, res) => {
     handleRequest(req, res, storage, hooks).catch((err: unknown) => {
       hooks.onLog?.(`handler error: ${String(err)}`);
@@ -175,16 +171,22 @@ export async function startDaemon(
 
   await new Promise<void>((resolve, reject) => {
     server.once("error", reject);
-    server.listen(port, "127.0.0.1", () => resolve());
+    server.listen(port, "127.0.0.1", () => {
+      resolve();
+    });
   });
-  hooks.onLog?.(`local ingest listening on http://127.0.0.1:${port}`);
+  hooks.onLog?.(`local ingest listening on http://127.0.0.1:${String(port)}`);
 
   const closeServer = (): Promise<void> =>
-    new Promise<void>((resolve) => server.close(() => resolve()));
+    new Promise<void>((resolve) => {
+      server.close(() => {
+        resolve();
+      });
+    });
 
   if (!useTunnel) {
     return {
-      publicUrl: `http://127.0.0.1:${port}`,
+      publicUrl: `http://127.0.0.1:${String(port)}`,
       stop: closeServer,
     };
   }
@@ -192,8 +194,12 @@ export async function startDaemon(
   const tunnel = new NgrokTunnel();
   let publicUrl: string;
   try {
-    // ngrokDomain is guaranteed by the check above when useTunnel is true.
-    publicUrl = await tunnel.start({ port, domain: config.ngrokDomain! });
+    if (!config.ngrokDomain) {
+      throw new Error(
+        "ngrok domain not configured — run: wi config --ngrok-domain <your>.ngrok-free.app",
+      );
+    }
+    publicUrl = await tunnel.start({ port, domain: config.ngrokDomain });
   } catch (err) {
     await closeServer();
     throw err;
