@@ -10,7 +10,7 @@ import {
   type ProjectApplyPlan,
 } from "@webhook-it/core";
 
-const VERSION = "0.1.0";
+const VERSION = "0.1.1";
 
 const HELP = `webhook-it ${VERSION} — stable public URLs for webhooks, forwarded to your localhost.
 
