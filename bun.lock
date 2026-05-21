@@ -13,20 +13,20 @@
     },
     "apps/cli": {
       "name": "@carlos3g/webhook-it",
-      "version": "0.1.1",
+      "version": "0.1.2",
       "bin": {
         "webhook-it": "dist-npm/wi.js",
         "wi": "dist-npm/wi.js",
       },
       "dependencies": {
         "@opentui/core": "0.2.15",
-        "@opentui/solid": "0.2.15",
-        "solid-js": "1.9.12",
       },
       "devDependencies": {
+        "@opentui/solid": "0.2.15",
         "@webhook-it/core": "workspace:*",
         "@webhook-it/shared": "workspace:*",
         "@webhook-it/tsconfig": "workspace:*",
+        "solid-js": "1.9.12",
       },
     },
     "packages/core": {

@@ -7,10 +7,13 @@ import solidPlugin from "@opentui/solid/bun-plugin";
 // standalone, platform-specific binary. That is great for a direct download,
 // but wrong for npm: a single compiled binary only runs on one OS/arch.
 //
-// This build keeps the output as JavaScript that runs on the user's own Bun
-// (OpenTUI requires Bun anyway). The internal @webhook-it/* workspace packages
-// are bundled in; OpenTUI and Solid stay external — they are real npm
-// dependencies declared in package.json.
+// This build keeps the output as JavaScript that runs on the user's own Bun.
+// Solid and @opentui/solid are bundled IN — they must be resolved at build
+// time (with the Solid plugin) so the correct browser/universal build of
+// solid-js is used. If solid-js were left external, the Bun runtime would
+// resolve it to its server build and createMemo/createSignal would break.
+// Only @opentui/core stays external: it loads a native core that cannot be
+// bundled into a portable .js file, so it remains a real npm dependency.
 
 rmSync("./dist-npm", { recursive: true, force: true });
 
@@ -19,14 +22,7 @@ const result = await Bun.build({
   outdir: "./dist-npm",
   target: "bun",
   format: "esm",
-  external: [
-    "@opentui/core",
-    "@opentui/core/*",
-    "@opentui/solid",
-    "@opentui/solid/*",
-    "solid-js",
-    "solid-js/*",
-  ],
+  external: ["@opentui/core", "@opentui/core/*"],
   plugins: [solidPlugin],
   naming: "wi.js",
   // Make the entry directly executable: `wi` / `bunx @carlos3g/webhook-it`.

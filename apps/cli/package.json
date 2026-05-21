@@ -1,6 +1,6 @@
 {
   "name": "@carlos3g/webhook-it",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Stable public URLs for webhooks, forwarded in real time to your localhost — an interactive terminal dashboard.",
   "keywords": [
     "webhook",
@@ -48,11 +48,11 @@
     "clean": "rm -rf dist dist-npm"
   },
   "dependencies": {
-    "@opentui/core": "0.2.15",
-    "@opentui/solid": "0.2.15",
-    "solid-js": "1.9.12"
+    "@opentui/core": "0.2.15"
   },
   "devDependencies": {
+    "@opentui/solid": "0.2.15",
+    "solid-js": "1.9.12",
     "@webhook-it/core": "workspace:*",
     "@webhook-it/shared": "workspace:*",
     "@webhook-it/tsconfig": "workspace:*"
